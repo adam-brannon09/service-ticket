@@ -1,10 +1,16 @@
 const express = require('express');
 const dotenv = require('dotenv').config();
+const colors = require('colors');
 // import the error handler
 const { errorHandler } = require('./middleware/errorMiddleware');
+// Import the database connection
+const connectDB = require('./config/db');
 const PORT = process.env.PORT || 8000;
-const app = express();
 
+// Connect to the database
+connectDB();
+// Initialize the express app
+const app = express();
 // Middleware to send JSON data to the server
 app.use(express.json());
 // Middleware to parse the URL-encoded data from the server

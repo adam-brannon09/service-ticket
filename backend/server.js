@@ -21,8 +21,10 @@ app.get('/', (req, res) => {
 }
 );
 
-// Import the routes
+// Import the user routes
 app.use('/api/users', require('./routes/userRoutes'));
+// Import the ticket routes
+app.use('/api/tickets', require('./routes/ticketRoutes'));
 // Initialize the error handler
 app.use(errorHandler);
 

@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
 }
 );
 
+// Import the routes
 app.use('/api/users', require('./routes/userRoutes'));
 // Initialize the error handler
 app.use(errorHandler);

@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaSignInAlt } from 'react-icons/fa'
 import { toast } from 'react-toastify'
 import { useSelector, useDispatch } from 'react-redux'
-import { login } from '../features/auth/authSlice'
+import { login, reset } from '../features/auth/authSlice'
+import { useNavigate } from "react-router-dom";
+import Spinner from "../components/Spinner";
+import { set } from "mongoose";
+
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -14,9 +18,26 @@ function Login() {
 
     // initialize useDispatch hook
     const dispatch = useDispatch()
+    //initialize useNavigate hook
+    const navigate = useNavigate()
 
     //initialize useSelector hook
-    const { user, isLoading, isSuccess, errorMessage } = useSelector(state => state.auth)
+    const { user, isLoading, isSuccess, isError, message } = useSelector(state => state.auth)
+
+    //useEffect hook for error and success, and resets state using reset action creator from authSlice
+    useEffect(() => {
+        if (isError) {
+            setFormData({
+                email: '',
+                password: '',
+            })
+            toast.error(message)
+        }
+        if (isSuccess || user) {
+            navigate('/')
+        }
+
+    }, [isError, isSuccess, user, message, navigate])
 
 
     //onChange function
@@ -37,6 +58,10 @@ function Login() {
         }
         dispatch(login(userData))
 
+    }
+
+    if (isLoading) {
+        return <Spinner />
     }
 
     return (

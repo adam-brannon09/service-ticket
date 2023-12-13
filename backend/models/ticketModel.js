@@ -8,11 +8,13 @@ const ticketSchema = mongoose.Schema(
         user: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
+            // Reference the User model with the ref keyword. 
             ref: 'User',
         },
         product: {
             type: String,
             required: [true, 'Please select a product'],
+            // Add an enum validator to make sure the product is one of the following
             enum: ['iPhone', 'Macbook Pro', 'iMac', 'iPad', 'Apple Watch', 'AirPods'],
         },
         description: {

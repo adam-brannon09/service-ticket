@@ -1,3 +1,5 @@
+//@Description: Custom hook to check if the user is logged in or not
+
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -10,10 +12,13 @@ export const useAuthStatus = () => {
     const { user } = useSelector((state) => state.auth);
 
     useEffect(() => {
+        // If the user exists, set loggedIn to true and checkingStatus to false
         if (user) {
             setLoggedIn(true);
             setCheckingStatus(false);
-        } else {
+        }
+        // If the user does not exist, set loggedIn to false and checkingStatus to false
+        else {
             setLoggedIn(false);
             setCheckingStatus(false);
         }

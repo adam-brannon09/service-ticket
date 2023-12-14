@@ -10,7 +10,7 @@ import BackButton from '../components/BackButton'
 function NewTicket() {
     // gets the user from the redux store
     const { user } = useSelector((state) => state.auth)
-    const { isLoading, isSuccess, isError, message } = useSelector(state => state.ticket)
+    const { isLoading, isSuccess, isError, message } = useSelector(state => state.tickets)
     const [name] = useState(user.name)
     const [email] = useState(user.email)
     const [product, setProduct] = useState('')

@@ -28,6 +28,22 @@ export const createTicket = createAsyncThunk(
     });
 
 
+// get user tickets
+export const getTickets = createAsyncThunk(
+    'tickets/getAll',
+    //thunkAPI can get the state from other slices. in this case, we get the jwt from the auth slice in line 21.
+    async (_, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token
+            return await ticketService.getTickets(token);
+        } catch (error) {
+            const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+            //return the error message as a rejected promise to be used in the rejected case of createTicket
+            return thunkAPI.rejectWithValue(message);
+        }
+    });
+
+
 export const ticketSlice = createSlice({
     name: 'ticket',
     initialState,
@@ -37,18 +53,41 @@ export const ticketSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            //create ticket
+            //if the promise is pending, isLoading is set to true
             .addCase(createTicket.pending, (state) => {
                 state.isLoading = true;
             })
+            //if the promise is fulfilled, isLoading is set to false and isSuccess is set to true
             .addCase(createTicket.fulfilled, (state) => {
                 state.isLoading = false;
                 state.isSuccess = true;
             })
+            //if the promise is rejected, isLoading is set to false, isError is set to true, and message is set to the payload
             .addCase(createTicket.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
+            })
+            //get tickets
+            //if the promise is pending, isLoading is set to true
+            .addCase(getTickets.pending, (state) => {
+                state.isLoading = true;
+            })
+            //if the promise is fulfilled, isLoading is set to false, isSuccess is set to true, and tickets is set to the payload
+            .addCase(getTickets.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.tickets = action.payload;
+            })
+            //if the promise is rejected, isLoading is set to false, isError is set to true, and message is set to the payload
+            .addCase(getTickets.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
             });
+
+
 
     }
 

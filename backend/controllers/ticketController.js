@@ -53,9 +53,9 @@ const getTicket = asyncHandler(async (req, res) => {
 // @route   POST /api/tickets
 // @access  Private
 const createTicket = asyncHandler(async (req, res) => {
-    //destructure the request body, get the product and description
+    //destructure the request body, get the product and description from the body(user input)
     const { product, description } = req.body
-
+    // If the product or description is not provided, throw an error
     if (!product || !description) {
         res.status(400)
         throw new Error('Please fill all fields')

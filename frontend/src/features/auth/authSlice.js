@@ -39,7 +39,6 @@ export const login = createAsyncThunk(
 
             return thunkAPI.rejectWithValue(message);
         }
-
     });
 
 //Logout User

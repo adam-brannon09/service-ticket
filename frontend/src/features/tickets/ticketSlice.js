@@ -127,6 +127,11 @@ export const ticketSlice = createSlice({
                 state.isSuccess = true;
                 state.ticket = action.payload;
             })
+            .addCase(getTicket.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
             // if the promise is fullfilled and the ticket is closed, the ticket is removed from the tickets array
             .addCase(closeTicket.fulfilled, (state, action) => {
                 state.isLoading = false;

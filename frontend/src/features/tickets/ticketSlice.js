@@ -43,6 +43,21 @@ export const getTickets = createAsyncThunk(
         }
     });
 
+// get user ticket
+export const getTicket = createAsyncThunk(
+    'tickets/get',
+    //thunkAPI can get the state from other slices. in this case, we get the jwt from the auth slice in line 21.
+    async (ticketId, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token
+            return await ticketService.getTicket(ticketId, token);
+        } catch (error) {
+            const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+            //return the error message as a rejected promise to be used in the rejected case of createTicket
+            return thunkAPI.rejectWithValue(message);
+        }
+    });
+
 
 export const ticketSlice = createSlice({
     name: 'ticket',
@@ -82,6 +97,23 @@ export const ticketSlice = createSlice({
             })
             //if the promise is rejected, isLoading is set to false, isError is set to true, and message is set to the payload
             .addCase(getTickets.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            //get ticket
+            //if the promise is pending, isLoading is set to true
+            .addCase(getTicket.pending, (state) => {
+                state.isLoading = true;
+            })
+            //if the promise is fulfilled, isLoading is set to false, isSuccess is set to true, and tickets is set to the payload
+            .addCase(getTicket.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.ticket = action.payload;
+            })
+            //if the promise is rejected, isLoading is set to false, isError is set to true, and message is set to the payload
+            .addCase(getTicket.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;

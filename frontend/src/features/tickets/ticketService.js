@@ -41,13 +41,26 @@ const getTicket = async (ticketId, token) => {
     const response = await axios.get(API_URL + ticketId, config);
     return response.data;
 };
+// Close ticket
+const closeTicket = async (ticketId, token) => {
+    //set the headers for the request
+    //the token has to be passed in the headers for the backend to verify the user is logged in and authorized to create a ticket
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.put(API_URL + ticketId, { status: 'Closed' }, config);
+    return response.data;
+};
 
 
 //export functions so they can be used in ticket slice
 const ticketService = {
     createTicket,
     getTickets,
-    getTicket
+    getTicket,
+    closeTicket
 
 };
 //export functions so they can be used in ticket slice

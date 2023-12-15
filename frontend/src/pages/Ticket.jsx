@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { getTicket, reset } from "../features/tickets/ticketSlice";
-import { useParams } from "react-router-dom";
+import { getTicket, reset, closeTicket } from "../features/tickets/ticketSlice";
+import { useParams, useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton";
 import Spinner from "../components/Spinner";
 
@@ -13,6 +13,7 @@ function Ticket() {
     const { name, email } = useSelector((state) => state.auth.user)
 
     const params = useParams()
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     //useParams is a hook that gives us access to the params in the url
     //in this case, we are getting the ticketId from the url
@@ -24,6 +25,18 @@ function Ticket() {
         }
         dispatch(getTicket(ticketId))
     }, [isError, message, ticketId])
+
+
+    //close ticket
+    const onTicketClose = async () => {
+        try {
+            await dispatch(closeTicket(ticketId))
+            toast.success('Ticket Closed')
+            navigate('/tickets')
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
 
 
     if (isLoading) {
@@ -58,6 +71,9 @@ function Ticket() {
                     <p>Email: {email}</p>
                 </div>
             </header>
+            {ticket.status !== 'Closed' && (
+                <button className="btn btn-block btn-danger" onClick={onTicketClose}>Close Ticket</button>
+            )}
         </div>
     )
 }

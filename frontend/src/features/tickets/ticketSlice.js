@@ -58,6 +58,21 @@ export const getTicket = createAsyncThunk(
         }
     });
 
+// close ticket
+export const closeTicket = createAsyncThunk(
+    'tickets/close',
+    //thunkAPI can get the state from other slices. in this case, we get the jwt from the auth slice in line 21.
+    async (ticketId, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token
+            return await ticketService.closeTicket(ticketId, token);
+        } catch (error) {
+            const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+            //return the error message as a rejected promise to be used in the rejected case of createTicket
+            return thunkAPI.rejectWithValue(message);
+        }
+    });
+
 
 export const ticketSlice = createSlice({
     name: 'ticket',
@@ -112,11 +127,11 @@ export const ticketSlice = createSlice({
                 state.isSuccess = true;
                 state.ticket = action.payload;
             })
-            //if the promise is rejected, isLoading is set to false, isError is set to true, and message is set to the payload
-            .addCase(getTicket.rejected, (state, action) => {
+            // if the promise is fullfilled and the ticket is closed, the ticket is removed from the tickets array
+            .addCase(closeTicket.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.isError = true;
-                state.message = action.payload;
+                state.tickets.map((ticket) => ticket._id === action.payload._id ? (ticket.status = 'Closed') : ticket);
+
             });
 
 

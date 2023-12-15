@@ -2,7 +2,9 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { getTicket, reset, closeTicket } from "../features/tickets/ticketSlice";
+import { getNotes, reset as notesReset } from "../features/notes/noteSlice";
 import { useParams, useNavigate } from "react-router-dom";
+import NoteItem from "../components/NoteItem";
 import BackButton from "../components/BackButton";
 import Spinner from "../components/Spinner";
 
@@ -11,6 +13,8 @@ function Ticket() {
     //useSelector is a hook that gives us access to the state in the redux store
     const { ticket, isLoading, isSuccess, isError, message } = useSelector((state) => state.tickets)
     const { name, email } = useSelector((state) => state.auth.user)
+    //isLoading: notesIsLoading is destructuring the isLoading property from the notes slice of state and renaming it to notesIsLoading since we already have a isLoading variable from the ticket slice of state
+    const { notes, isLoading: notesIsLoading } = useSelector((state) => state.notes)
 
     const params = useParams()
     const navigate = useNavigate()
@@ -24,6 +28,7 @@ function Ticket() {
             toast.error(message)
         }
         dispatch(getTicket(ticketId))
+        dispatch(getNotes(ticketId))
     }, [isError, message, ticketId])
 
 
@@ -38,8 +43,8 @@ function Ticket() {
         }
     }
 
-
-    if (isLoading) {
+    //check if loading ticket information or notes information
+    if (isLoading || notesIsLoading) {
         return <Spinner />
     }
 
@@ -71,6 +76,9 @@ function Ticket() {
                     <p>Email: {email}</p>
                 </div>
             </header>
+            {notes.map((note) => (
+                <NoteItem key={note._id} note={note} />
+            ))}
             {ticket.status !== 'Closed' && (
                 <button className="btn btn-block btn-danger" onClick={onTicketClose}>Close Ticket</button>
             )}

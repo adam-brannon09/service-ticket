@@ -25,6 +25,21 @@ export const getNotes = createAsyncThunk(
         }
     });
 
+// get user ticket
+export const createNote = createAsyncThunk(
+    'notes/create',
+    //thunkAPI can get the state from other slices. in this case, we get the jwt from the auth slice in line 21.
+    async ({ noteText, ticketId }, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token
+            return await noteService.createNote(noteText, ticketId, token);
+        } catch (error) {
+            const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+            //return the error message as a rejected promise to be used in the rejected case of createTicket
+            return thunkAPI.rejectWithValue(message);
+        }
+    });
+
 export const noteSlice = createSlice({
     name: 'note',
     initialState,
@@ -45,6 +60,20 @@ export const noteSlice = createSlice({
                 state.notes = action.payload;
             })
             .addCase(getNotes.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(createNote.pending, (state) => {
+                state.isLoading = true;
+            })
+            //if the promise is fulfilled, isLoading is set to false, isSuccess is set to true, and tickets is set to the payload
+            .addCase(createNote.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.notes.push(action.payload);
+            })
+            .addCase(createNote.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;

@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import { FaPlus } from 'react-icons/fa'
 import { useSelector, useDispatch } from "react-redux";
 import { getTicket, reset, closeTicket } from "../features/tickets/ticketSlice";
-import { getNotes, reset as notesReset } from "../features/notes/noteSlice";
+import { getNotes, createNote, reset as notesReset } from "../features/notes/noteSlice";
 import { useParams, useNavigate } from "react-router-dom";
 import NoteItem from "../components/NoteItem";
 import BackButton from "../components/BackButton";
@@ -67,9 +67,11 @@ function Ticket() {
     //create note submit
     const onNoteSubmit = (e) => {
         e.preventDefault()
-        console.log(noteText)
+        dispatch(createNote({
+            noteText,
+            ticketId
+        }))
         closeModal()
-        setNoteText('')
     }
 
     //open/close modal

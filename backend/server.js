@@ -17,7 +17,10 @@ app.use(express.json());
 // Middleware to parse the URL-encoded data from the server
 app.use(express.urlencoded({ extended: true }));
 
-
+// app.get('/', (req, res) => {
+//     res.send('API is running...');
+// }
+// );
 
 // Import the user routes
 app.use('/api/users', require('./routes/userRoutes'));
